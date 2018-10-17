@@ -34,21 +34,29 @@ A Well_key and FC_data template can be found as txt files in this repository. We
 - If `FALSE`, each sample will be treated individually. Coefficient of selection will be found by fitting a linear model for each individual sample. 
 *Replicates MUST be named identically in the well key.*
 
-`Calculate error? (TRUE/FALSE):` 
+      `Calculate error? (TRUE/FALSE):` 
 
 - If you have multiple replicates (`TRUE` for `Group replicates?`), the script will find the standard error of regression and 95% CI by fitting a linear model based on all data points within a replicate. 
 *Replicates MUST be named identically in the well key.*
 - If you do not have replicates of individual competitions (`FALSE` for `Group replicates?`), this method will assign each fitness measurement an error based on the error of regression for each individual sample. 
 
-`Plot results? (TRUE/FALSE):` 
+      `Plot results? (TRUE/FALSE):` 
 
 - For no replicates, each sample will be plotted individually with error bars corresponding to 95% CI. 
 - If you have replicates, each replicate will be plotted as one point with error bars corresponding to 95% CI
 
  ### Fitness_ANCOVA
- `Fitness_ANCOVA(your well_key, your_flow_data)` 
+ `output<-Fitness_ANCOVA(your well_key, your_flow_data)` 
 - Uses an ANCOVA (analysis of covariance) to look for statistical differences in slope between competitions.
 - User options remain the same as `Analyze_Fitness_Data`. 
+- Output is a summary of the ANCOVA on the linear models of all competitions. If there are significant differences amongst competitions, the console will print out a message indicating that. 
+
+### Fitness_ANCOVA_post_hoc
+`output<- Fitness_ANCOVA_post_hoc(output_of_Fitness_ANCOVA)`
+- output of `Fitness_ANCOVA` can be fed into `Fitness_ANCOVA_post_hoc` *if* the former finds a significant interaction of competition and generation on fitness. 
+- will perform a TUKEY HSD post hoc test to find pairwise differences in your data 
+- output generated will be a table of all pairwise comparisons and their individual p values 
+- significant results will also print to the console. 
 
 
 
