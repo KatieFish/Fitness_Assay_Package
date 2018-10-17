@@ -31,11 +31,12 @@ A Well_key and FC_data template can be found as txt files in this repository.
 
 ### Functions
 
- `output <- Analyze_Fitness_Data(your well_key, your_flow_data)` 
+### Analyze_Fitness_Data
+`output <- Analyze_Fitness_Data(your well_key, your_flow_data)` 
 - cacluates the coefficient of selection of a query strain using time-course compettive growth assay flow cytometry data
 - output is a table of selection coefficient, standard error, and 95% CI for each competition or replicate group
 
-`Group replicates? (TRUE/FALSE):` 
+      `Group replicates? (TRUE/FALSE):` 
 
 - The well key supplied will be used to look for any duplicate competitions. If `TRUE`, grouping replicates will treat all competitions with identical strain identifiers as biological replicates (columns 2-4 in the well  key are identical). The coefficient of selection for each replicate group will be found by fitting a linear model based on all data points within a replicate. 
 - If `FALSE`, each sample will be treated individually. Coefficient of selection will be found by fitting a linear model for each individual sample. 
@@ -52,6 +53,7 @@ A Well_key and FC_data template can be found as txt files in this repository.
 - For no replicates, each sample will be plotted individually with error bars corresponding to 95% CI. 
 - If you have replicates, each replicate will be plotted as one point with error bars corresponding to 95% CI
 
+ ### Fitness_ANCOVA
  `Fitness_ANCOVA(your well_key, your_flow_data)` 
 - Uses an ANCOVA (analysis of covariance) to look for statistical differences in slope between competitions.
 - User options remain the same as `Analyze_Fitness_Data`. 
