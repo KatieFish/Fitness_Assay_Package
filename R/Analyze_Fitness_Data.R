@@ -66,25 +66,34 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
     library(ggplot2)
     upper_y<- max(result_df[,3])+ .3
     lower_y<-min(result_df[,3])-.3
-   a<- ggplot(result_df, aes(x=Well_ID, y=selection_coefficient))+
+    if (error_method){
+   a<- ggplot(result_df, aes(x=Well.ID, y=selection_coefficient))+
       geom_errorbar(aes(ymin=selection_coefficient-CI, ymax=selection_coefficient+CI), width=.1)+
-      geom_point()+
+      geom_point(aes(colour=Competition))+
       ylim(lower_y, upper_y)+
       xlab("Competition")+
       ylab("Fitness advantage")+
     theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())
     print(a)
+    }
+    else {
+      a<- ggplot(result_df, aes(x=Competition, y=selection_coefficient))+
+        geom_point(aes(colour=Competition))+
+        ylim(lower_y, upper_y)+
+        xlab("Competition")+
+        ylab("Fitness advantage")+
+        theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())
+      print(a)
+    }
   }
-  
-  
   }
   if (group_replicates){
     library(reshape2)
     result_df$"replicates"<-NA
         groups<- c(1)
         for (i in 2:nrow(Well_key)){
-          ids<- as.numeric(Well_key[i, 2:4])
-          prev_ids<-as.numeric(Well_key[i-1, 2:4])
+          ids<- as.list(Well_key[i, 2:4])
+          prev_ids<-as.list(Well_key[i-1, 2:4])
           if (!identical(ids, prev_ids)){
             groups<- append(groups, i)
           }
@@ -114,25 +123,37 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
           result_df[groups[j]:end,4]<-coef(summary(linmod))[2,2]
           crit_t<- qt(1-.05/2,((length(time_points)*(nrow(replicate_group)))-2))
           result_df[groups[j]:end,5]<- signif(crit_t*result_df[groups[j],4], 4)
-          result_df[groups[j]:end,6]<-nrow(replicate_group)
         }    
-  
+          result_df$replicates[groups[j]]<-nrow(replicate_group)
         }
   if(plot_boolean){
     library(ggplot2)
     library(ggrepel)
     upper_y<- max(result_df[,3])+ .3
     lower_y<-min(result_df[,3])-.3
-    a<- ggplot(result_df, aes(Competition, selection_coefficient))+
+    
+    if (error_method){
+      a<- ggplot(result_df, aes(Competition, selection_coefficient))+
       geom_errorbar(aes(ymin=selection_coefficient-CI, ymax=selection_coefficient+CI), width=.1)+
-      geom_point()+
+      geom_point(aes(colour=Competition), size=2)+
       ylim(lower_y, upper_y)+
       xlab("Competition")+
       ylab("Fitness advantage")+
-      theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())
-     # geom_text_repel(aes(label=replicates)) 
+      theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())+
+      geom_text_repel(aes(label=replicates)) 
     print(a) 
-  }
+    }
+  else {
+      a<- ggplot(result_df, aes(Competition, selection_coefficient))+
+      geom_point(aes(col=Competition), size=2)+
+      ylim(lower_y, upper_y)+
+      xlab("Competition")+
+      ylab("Fitness advantage")+
+      theme(axis.text.x=element_blank(),axis.ticks.x=element_blank())+
+      geom_text_repel(aes(label=replicates)) 
+    print(a) 
+    }
+    }
   }
 return (result_df)
   }
