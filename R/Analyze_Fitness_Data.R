@@ -101,6 +101,7 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
       library(reshape2)
       result_df$"replicates"<-NA
       groups<- c(1)
+      Well_key<- Well_key[order(Well_key[,2], Well_key[,3]), ]
       for (i in 2:nrow(Well_key)){
         ids<- as.list(Well_key[i, 2:4])
         prev_ids<-as.list(Well_key[i-1, 2:4])
@@ -114,6 +115,7 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
         } else {
           end<-nrow(FC_data)
         }
+        FC_data<-FC_data[order(match(FC_data[,1], Well_key[,1])), ]
         replicate_group<- FC_data[groups[j]:end, 2:ncol(FC_data)]
         count_df<- replicate_group[,(seq(1, ncol(replicate_group), 2))]
         if (Well_key[groups[j],4]==Well_key[groups[j],2]){ #if gated on experimental
