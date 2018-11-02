@@ -14,7 +14,7 @@ Fitness_ANCOVA<- function(Well_key, FC_data){
   if (identical(Well_key[,1], FC_data[,1])){ #the rest of the code will only execute if the first column of the well key 
     # matches the first column of the flow data. 
 
- time_points<- c(1:((ncol(FC_data)-1)/2)) #finds how many time points are in competition
+ time_points<- (c(0:((ncol(FC_data)-3)/2)))*10 #finds how many time points are in competition
     
 ANCOVA_df<- data.frame(matrix(vector(), 0, 3, dimnames=list(c(), c("Competition", "Generation", "ln_exp_ref"))), stringsAsFactors=FALSE)
   
