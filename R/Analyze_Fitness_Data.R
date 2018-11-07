@@ -1,5 +1,6 @@
 Analyze_Fitness_Data<- function(Well_key, FC_data){
   
+  options(scipen = 999)
   #user supplies boolean values for grouping by replicates (in which case identical 
   #competions in the well key will be grouped), calculating error, or plotting results. 
   group_replicates<- as.logical(readline(prompt="Group replicates? (TRUE/FALSE): "))
@@ -23,7 +24,7 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
       result_df$"CI"<-NA
     }
     
-    time_points<- c(1:((ncol(FC_data)-1)/2))
+    time_points<- (c(0:((ncol(FC_data)-3)/2)))*10
     
     if(!group_replicates){
       for (i in 1:nrow(FC_data)){
@@ -59,6 +60,7 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
           ln_exp_ref_vector<-as.numeric(ln_exp_ref_vector[1,])
           linmod <- lm(na.exclude(ln_exp_ref_vector ~ time_points))
           result_df[i,3]<-signif((as.numeric(coef(linmod)[2])), 4)
+        
           if(error_method){
             if (is.na(result_df[i,3])){
               result_df[i,4]<-NA
@@ -74,8 +76,8 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
       }
       if (plot_boolean){
         library(ggplot2)
-        upper_y<- max(result_df[,3])+ .3
-        lower_y<-min(result_df[,3])-.3
+        upper_y<- max(result_df[,3])+ result_df[which.max(result_df[,3]), 5] + .02
+        lower_y<-min(result_df[,3]) - result_df[which.min(result_df[,3]), 5] - .02
         if (error_method){
           a<- ggplot(result_df, aes(x=Well.ID, y=selection_coefficient))+
             geom_errorbar(aes(ymin=selection_coefficient-CI, ymax=selection_coefficient+CI), width=.1)+
@@ -102,6 +104,8 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
       result_df$"replicates"<-NA
       groups<- c(1)
       Well_key<- Well_key[order(Well_key[,2], Well_key[,3]), ]
+      FC_data<-FC_data[order(match(FC_data[,1], Well_key[,1])), ]
+      result_df<- result_df[order(match(result_df[,1], Well_key[,1])), ]
       for (i in 2:nrow(Well_key)){
         ids<- as.list(Well_key[i, 2:4])
         prev_ids<-as.list(Well_key[i-1, 2:4])
@@ -115,7 +119,7 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
         } else {
           end<-nrow(FC_data)
         }
-        FC_data<-FC_data[order(match(FC_data[,1], Well_key[,1])), ]
+       
         replicate_group<- FC_data[groups[j]:end, 2:ncol(FC_data)]
         count_df<- replicate_group[,(seq(1, ncol(replicate_group), 2))]
         if (Well_key[groups[j],4]==Well_key[groups[j],2]){ #if gated on experimental
@@ -141,8 +145,8 @@ Analyze_Fitness_Data<- function(Well_key, FC_data){
       if(plot_boolean){
         library(ggplot2)
         library(ggrepel)
-        upper_y<- max(result_df[,3])+ .3
-        lower_y<-min(result_df[,3])-.3
+        upper_y<- max(result_df[,3])+ result_df[which.max(result_df[,3]), 5] + .02
+        lower_y<-min(result_df[,3]) - result_df[which.min(result_df[,3]), 5] - .02
         
         if (error_method){
           a<- ggplot(result_df, aes(Competition, selection_coefficient))+
